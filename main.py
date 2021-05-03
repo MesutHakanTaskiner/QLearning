@@ -18,7 +18,7 @@ def gui():
 
     frame_up = Label(root)
     frame_down = Label(root)
-    
+
     frame_up.pack()
     frame_down.pack()
 
@@ -52,7 +52,7 @@ def gui():
             destination_button['state'] = DISABLED              # Disable button after press
             pressed_button = 0
 
-    start_button = Button(frame_up, text = 'Select Start Point', command=lambda: button_mode(1))
+    start_button = Button(frame_up, text = 'Select Start Point', command = lambda: button_mode(1))
     destination_button = Button(frame_up, text = 'Select Destination', command=lambda: button_mode(2))
 
     start_button.grid(row = 0, column = 0, padx = 10)
@@ -61,44 +61,48 @@ def gui():
     for i in range(10):
         for j in range(10):
             random_number = random.randint(1,9)
-            button_list.append(Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x)))
-            button_list[count].grid(row = i, column = j, sticky = "ew")
+            matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
+            matrix[i][j].grid(row = i, column = j, sticky = "ew")
             matrix[i][j] = random_number
             count += 1
-
     
-    '''def Run():                                         # algorithm script is called
+    # algorithm script is called
+    def Run():                                         
         parent = algorithm.backened(starting_point, obstacle_list, destination_point)
         for value in parent:
             button_list[value].config(bg = '#33fff0')         # path color is turned blue
-        button_list[starting_point].config(bg = '#ffe525')               # starting pt color is turned back yellow'''
+        button_list[starting_point].config(bg = '#ffe525')               # starting pt color is turned back yellow
+    
 
-    #run_button = Button(frame_up, text = 'Run', command = Run)
-    #run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
+    run_button = Button(frame_up, text = 'Run', command = Run)
+    run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
 
-   
-    def restart():           # Restarting Gui
+   # Restarting Gui
+    def restart():           
         root.destroy()
         gui()
         
     restart_button = Button(frame_up, text='Restart', command = restart)
     restart_button.grid(row = 0, column = 3, padx = 10, pady = 5)
 
-    def setting_obstacles(): # Creating obstacles that random place
+    # Creating obstacles that random place
+    def setting_obstacles(): 
         global obstacle_list
         random_obstacles_numbers = []
-        
+
         for i in range(30): 
-            random_numbers = random.randint(0, 99)
+            random_numbers_x = random.randint(0, 9)
 
             while random_numbers in random_obstacles_numbers != True: # If there is random number in obstacle list generate new random number
-                random_numbers = random.randint(0, 99)
+                random_numbers = random.randint(0, 9)
 
             random_obstacles_numbers.append(random_numbers)
         
         obstacle_list = random_obstacles_numbers
+
         for every in random_obstacles_numbers:
             button_list[every].config(bg = '#ff8a33')
+ 
 
     obstacle_button = Button(frame_up, text = 'Set Obstacles', command = setting_obstacles)
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
