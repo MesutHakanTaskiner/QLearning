@@ -35,6 +35,8 @@ def gui():
     global destination_point                            # final destination variable
     dest = 1000
 
+    f = open("Coordinates.txt", "w")
+
     def button_mode(mode):                              # input field by user starting/obstacles/destination point
         global pressed_button
         pressed_button = mode
@@ -72,7 +74,7 @@ def gui():
             button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
             matrix[i][j] = random_number
             count += 1
-    
+
     # algorithm script is called
     def Run():                                         
         parent = algorithm.backened(starting_point, obstacle_list, destination_point)
@@ -80,7 +82,6 @@ def gui():
             button_list[value].config(bg = '#33fff0')         # path color is turned blue
         button_list[starting_point].config(bg = '#ffe525')               # starting pt color is turned back yellow
     
-
     run_button = Button(frame_up, text = 'Run', command = Run)
     run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
 
@@ -105,7 +106,13 @@ def gui():
             matrix[random_numbers_x][random_numbers_y] = 0
 
             button_matrix[random_numbers_x][random_numbers_y].config(bg = '#ff8a33')
-
+        
+        for i in range (10):
+            for j in range (10):
+                if(matrix[i][j] == 0):
+                    f.write(str(i) + ", " + str(j) + ", " + "K" + "\n")
+                else:
+                    f.write(str(i) + ", " + str(j) + ", " + "B" + "\n")
 
     obstacle_button = Button(frame_up, text = 'Set Obstacles', command = setting_obstacles)
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
