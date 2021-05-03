@@ -14,7 +14,11 @@ def gui():
     count = 0                                           # for identifying each button/vertex and passing unique parameters
     button_list = []                                    # stores button created during runtime
 
+    # Matrix for algorithm
     matrix = [[0 for i in range(10)] for j in range(10)]
+
+    # Matrix For Buttons painting
+    button_matrix = [[0 for i in range(10)] for j in range(10)]
 
     frame_up = Label(root)
     frame_down = Label(root)
@@ -61,8 +65,8 @@ def gui():
     for i in range(10):
         for j in range(10):
             random_number = random.randint(1,9)
-            matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
-            matrix[i][j].grid(row = i, column = j, sticky = "ew")
+            button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
+            button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
             matrix[i][j] = random_number
             count += 1
     
@@ -87,22 +91,18 @@ def gui():
 
     # Creating obstacles that random place
     def setting_obstacles(): 
-        global obstacle_list
-        random_obstacles_numbers = []
-
-        for i in range(30): 
+        for a in range(30): 
             random_numbers_x = random.randint(0, 9)
+            random_numbers_y = random.randint(0, 9)
+            
+            while matrix[random_numbers_x][random_numbers_y] == 0: # If there is random number in obstacle list generate new random number
+                random_numbers_x = random.randint(0, 9)
+                random_numbers_y = random.randint(0, 9)
 
-            while random_numbers in random_obstacles_numbers != True: # If there is random number in obstacle list generate new random number
-                random_numbers = random.randint(0, 9)
+            matrix[random_numbers_x][random_numbers_y] = 0
 
-            random_obstacles_numbers.append(random_numbers)
-        
-        obstacle_list = random_obstacles_numbers
+            button_matrix[random_numbers_x][random_numbers_y].config(bg = '#ff8a33')
 
-        for every in random_obstacles_numbers:
-            button_list[every].config(bg = '#ff8a33')
- 
 
     obstacle_button = Button(frame_up, text = 'Set Obstacles', command = setting_obstacles)
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
