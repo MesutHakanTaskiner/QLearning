@@ -42,15 +42,18 @@ def gui():
     def button_click(but_no):                                   # clicked buttons in path
         global pressed_button
 
+        second_number = int(but_no % 10)
+        first_number = int(but_no / 10)
+
         if pressed_button == 1:                                # for starting point when pressed_button = 1
-            button_list[but_no].config(bg = '#ffe525')
+            button_matrix[first_number][second_number].config(bg = '#ffe525')
             global starting_point
             starting_point = but_no
             start_button['state'] = DISABLED                    # Disable button after press
             pressed_button = 0
 
         if pressed_button == 2:                                # for destination when pressed_button = 2
-            button_list[but_no].config(bg = '#7dcf21')
+            button_matrix[first_number][second_number].config(bg = '#7dcf21')
             global destination_point
             destination_point = but_no
             destination_button['state'] = DISABLED              # Disable button after press
