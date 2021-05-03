@@ -12,9 +12,8 @@ def gui():
     root.geometry('500x500')
     root.resizable(width = FALSE, height = FALSE)
     count = 0                                           # for identifying each button/vertex and passing unique parameters
-    button_list = []   
     
-    root_size = 10                                 # stores button created during runtime
+    root_size = 10                                 
 
     # Matrix for algorithm
     matrix = [[0 for i in range(root_size)] for j in range(root_size)]
@@ -32,8 +31,6 @@ def gui():
     pressed_button = 0
     global starting_point                               # starting_point is starting point
     starting_point = 0
-    global obstacle_list                                # stores the obstacles when pressed_button is 2
-    obstacle_list = []
     global destination_point                            # final destination variable
     dest = 1000
 
@@ -64,7 +61,7 @@ def gui():
             pressed_button = 0
 
     start_button = Button(frame_up, text = 'Select Start Point', command = lambda: button_mode(1))
-    destination_button = Button(frame_up, text = 'Select Destination', command=lambda: button_mode(2))
+    destination_button = Button(frame_up, text = 'Select Destination', command = lambda: button_mode(2))
 
     start_button.grid(row = 0, column = 0, padx = 10)
     destination_button.grid(row = 0, column = 1)
@@ -77,15 +74,13 @@ def gui():
             matrix[i][j] = random_number
             count += 1
 
-    # algorithm script is called
+    ''' # algorithm script is called
     def Run():                                         
-        parent = algorithm.backened(starting_point, obstacle_list, destination_point)
-        for value in parent:
-            button_list[value].config(bg = '#33fff0')         # path color is turned blue
-        button_list[starting_point].config(bg = '#ffe525')               # starting pt color is turned back yellow
+ 
     
     run_button = Button(frame_up, text = 'Run', command = Run)
     run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
+'''
 
    # Restarting Gui
     def restart():           
@@ -109,7 +104,7 @@ def gui():
 
             matrix[random_numbers_x][random_numbers_y] = 0
 
-            button_matrix[random_numbers_x][random_numbers_y].config(bg = '#ff8a33')
+            button_matrix[random_numbers_x][random_numbers_y].config(bg = 'Red')
         
         for i in range (root_size):
             for j in range (root_size):
