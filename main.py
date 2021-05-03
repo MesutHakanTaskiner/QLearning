@@ -12,13 +12,15 @@ def gui():
     root.geometry('500x500')
     root.resizable(width = FALSE, height = FALSE)
     count = 0                                           # for identifying each button/vertex and passing unique parameters
-    button_list = []                                    # stores button created during runtime
+    button_list = []   
+    
+    root_size = 10                                 # stores button created during runtime
 
     # Matrix for algorithm
-    matrix = [[0 for i in range(10)] for j in range(10)]
+    matrix = [[0 for i in range(root_size)] for j in range(root_size)]
 
     # Matrix For Buttons painting
-    button_matrix = [[0 for i in range(10)] for j in range(10)]
+    button_matrix = [[0 for i in range(root_size)] for j in range(root_size)]
 
     frame_up = Label(root)
     frame_down = Label(root)
@@ -35,7 +37,7 @@ def gui():
     global destination_point                            # final destination variable
     dest = 1000
 
-    f = open("Coordinates.txt", "w")
+    f = open("Obstacle_list.txt", "w")
 
     def button_mode(mode):                              # input field by user starting/obstacles/destination point
         global pressed_button
@@ -67,8 +69,8 @@ def gui():
     start_button.grid(row = 0, column = 0, padx = 10)
     destination_button.grid(row = 0, column = 1)
 
-    for i in range(10):
-        for j in range(10):
+    for i in range(root_size):
+        for j in range(root_size):
             random_number = random.randint(1,9)
             button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
             button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
@@ -95,7 +97,9 @@ def gui():
 
     # Creating obstacles that random place
     def setting_obstacles(): 
-        for a in range(30): 
+        b = int((root_size**2)*(0.3))  # 30 percent of the matrix is obstacle 
+
+        for a in range(b): 
             random_numbers_x = random.randint(0, 9)
             random_numbers_y = random.randint(0, 9)
             
@@ -107,12 +111,12 @@ def gui():
 
             button_matrix[random_numbers_x][random_numbers_y].config(bg = '#ff8a33')
         
-        for i in range (10):
-            for j in range (10):
+        for i in range (root_size):
+            for j in range (root_size):
                 if(matrix[i][j] == 0):
-                    f.write(str(i) + ", " + str(j) + ", " + "K" + "\n")
+                    f.write(str(i) + ", " + str(j) + ", " + "K" + "\n") # K Obstacle
                 else:
-                    f.write(str(i) + ", " + str(j) + ", " + "B" + "\n")
+                    f.write(str(i) + ", " + str(j) + ", " + "B" + "\n") # B Not Obstacle
 
     obstacle_button = Button(frame_up, text = 'Set Obstacles', command = setting_obstacles)
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
