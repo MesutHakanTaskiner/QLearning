@@ -9,11 +9,11 @@ destination_point = None
 def gui():
     root = Tk()
     root.title('QLearning Algorithm')
-    root.geometry('500x500')
+    root.geometry('600x600')
     root.resizable(width = FALSE, height = FALSE)
     count = 0                                           # for identifying each button/vertex and passing unique parameters
     
-    root_size = 10                                 
+    root_size = 10                                
 
     # Matrix for algorithm
     matrix = [[0 for i in range(root_size)] for j in range(root_size)]
@@ -47,7 +47,7 @@ def gui():
         first_number = int(but_no / 10)
 
         if pressed_button == 1:                                # for starting point when pressed_button = 1
-            button_matrix[first_number][second_number].config(bg = '#ffe525')
+            button_matrix[first_number][second_number].config(bg = 'Aqua')
             global starting_point
             starting_point = but_no
             start_button['state'] = DISABLED                    # Disable button after press
@@ -69,7 +69,7 @@ def gui():
     for i in range(root_size):
         for j in range(root_size):
             random_number = random.randint(1,9)
-            button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
+            button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x), height = 0, width = 0)
             button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
             matrix[i][j] = random_number
             count += 1
