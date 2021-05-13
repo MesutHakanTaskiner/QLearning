@@ -1,10 +1,16 @@
 from tkinter import *
 import random
+import numpy as np
+from numpy.matrixlib.defmatrix import matrix
 
 pressed_button = None
 starting_point = None
 obstacle_list = None
 destination_point = None
+first_number_start = None
+second_number_start = None
+second_number_dest = None
+first_number_dest = None
 
 def gui():
     root = Tk()
@@ -16,7 +22,7 @@ def gui():
     root_size = 10                                
 
     # Matrix for algorithm
-    matrix = [[0 for i in range(root_size)] for j in range(root_size)]
+    rewards = [[0 for i in range(root_size)] for j in range(root_size)]
 
     # Matrix For Buttons painting
     button_matrix = [[0 for i in range(root_size)] for j in range(root_size)]
@@ -42,21 +48,22 @@ def gui():
 
     def button_click(but_no):                                   # clicked buttons in path
         global pressed_button
-
-        second_number = int(but_no % 10)
-        first_number = int(but_no / 10)
+        global second_number_start
+        global first_number_start
+        global second_number_dest
+        global first_number_dest
 
         if pressed_button == 1:                                # for starting point when pressed_button = 1
-            button_matrix[first_number][second_number].config(bg = 'Aqua')
-            global starting_point
-            starting_point = but_no
+            second_number_start = int(but_no % 10)
+            first_number_start = int(but_no / 10)
+            button_matrix[first_number_start][second_number_start].config(bg = 'Aqua')
             start_button['state'] = DISABLED                    # Disable button after press
             pressed_button = 0
 
         if pressed_button == 2:                                # for destination when pressed_button = 2
-            button_matrix[first_number][second_number].config(bg = '#7dcf21')
-            global destination_point
-            destination_point = but_no
+            second_number_dest = int(but_no % 10)
+            first_number_dest = int(but_no / 10)
+            button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
             destination_button['state'] = DISABLED              # Disable button after press
             pressed_button = 0
 
@@ -66,21 +73,15 @@ def gui():
     start_button.grid(row = 0, column = 0, padx = 10)
     destination_button.grid(row = 0, column = 1)
 
+    b = int((root_size**2)*(0.3))
+
     for i in range(root_size):
         for j in range(root_size):
             random_number = random.randint(1,9)
             button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x), height = 0, width = 0)
             button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
-            matrix[i][j] = random_number
+            rewards[i][j] = random_number
             count += 1
-
-    ''' # algorithm script is called
-    def Run():                                         
- 
-    
-    run_button = Button(frame_up, text = 'Run', command = Run)
-    run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
-'''
 
    # Restarting Gui
     def restart():           
@@ -98,17 +99,17 @@ def gui():
             random_numbers_x = random.randint(0, 9)
             random_numbers_y = random.randint(0, 9)
             
-            while matrix[random_numbers_x][random_numbers_y] == 0: # If there is random number in obstacle list generate new random number
+            while rewards[random_numbers_x][random_numbers_y] == -100: # If there is random number in obstacle list generate new random number
                 random_numbers_x = random.randint(0, 9)
                 random_numbers_y = random.randint(0, 9)
 
-            matrix[random_numbers_x][random_numbers_y] = 0
+            rewards[random_numbers_x][random_numbers_y] = -100
 
             button_matrix[random_numbers_x][random_numbers_y].config(bg = 'Red')
-        
+
         for i in range (root_size):
             for j in range (root_size):
-                if(matrix[i][j] == 0):
+                if(rewards[i][j] == -100):
                     f.write(str(i) + ", " + str(j) + ", " + "K" + "\n") # K Obstacle
                 else:
                     f.write(str(i) + ", " + str(j) + ", " + "B" + "\n") # B Not Obstacle
@@ -116,5 +117,115 @@ def gui():
     obstacle_button = Button(frame_up, text = 'Set Obstacles', command = setting_obstacles)
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
 
+        # algorithm script is called
+    def Run():                                         
+        environment_rows = 10
+        environment_columns = 10
+
+        q_values = np.zeros((environment_rows, environment_columns, 4)) 
+
+        actions = ['up', 'right', 'down', 'left']
+      
+        rewards[first_number_dest][second_number_dest] = 100
+        rewards[first_number_start][second_number_start] = 0
+
+        aisles = {} # Store Locations in dictionary
+        way = []
+
+        for row in rewards:
+            print(row)
+            
+        '''        for i in range(10):
+            for j in range(10):
+                if rewards[i][j] != -100:
+                    way.append(j)
+
+            aisles[i] = way
+            print(aisles[i])
+            way.clear'''
+         
+
+        #print(aisles)
+
+        '''for row_index in range(1, 10):
+            for column_index in aisles[row_index]:
+                rewards[row_index, column_index] = -1                  
+
+        def is_terminal_state(current_row_index, current_column_index):
+            if rewards[current_row_index, current_column_index] == -1.:
+                return False
+            else:
+                return True
+
+        def get_starting_location():
+            current_row_index = np.random.randint(environment_rows)
+            current_column_index = np.random.randint(environment_columns)
+            while is_terminal_state(current_row_index, current_column_index):
+                current_row_index = np.random.randint(environment_rows)
+                current_column_index = np.random.randint(environment_columns)
+            return current_row_index, current_column_index
+
+        def get_next_action(current_row_index, current_column_index, epsilon):
+            if np.random.random() < epsilon:
+                return np.argmax(q_values[current_row_index, current_column_index])
+            else:
+                return np.random.randint(4)
+        
+        def get_next_location(current_row_index, current_column_index, action_index):
+            new_row_index = current_row_index
+            new_column_index = current_column_index
+            if actions[action_index] == 'up' and current_row_index > 0:
+                new_row_index -= 1
+            elif actions[action_index] == 'right' and current_column_index < environment_columns - 1:
+                new_column_index += 1
+            elif actions[action_index] == 'down' and current_row_index < environment_rows - 1:
+                new_row_index += 1
+            elif actions[action_index] == 'left' and current_column_index > 0:
+                new_column_index -= 1
+            return new_row_index, new_column_index
+
+        def get_shortest_path(start_row_index, start_column_index):
+            if is_terminal_state(start_row_index, start_column_index):
+                return []
+            else: 
+                current_row_index, current_column_index = start_row_index, start_column_index
+                shortest_path = []
+                shortest_path.append([current_row_index, current_column_index])
+            
+                while not is_terminal_state(current_row_index, current_column_index):
+                    action_index = get_next_action(current_row_index, current_column_index, 1.)
+                    current_row_index, current_column_index = get_next_location(current_row_index, current_column_index, action_index)
+                    shortest_path.append([current_row_index, current_column_index])
+                return shortest_path
+
+        epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
+        discount_factor = 0.9 #discount factor for future rewards
+        learning_rate = 0.9 #the rate at which the AI agent should learn
+
+        for episode in range(1000):
+            row_index, column_index = get_starting_location()
+
+            while not is_terminal_state(row_index, column_index):
+                action_index = get_next_action(row_index, column_index, epsilon)
+
+                old_row_index, old_column_index = row_index, column_index #store the old row and column indexes
+                row_index, column_index = get_next_location(row_index, column_index, action_index)
+                
+                reward = rewards[row_index, column_index]
+                old_q_value = q_values[old_row_index, old_column_index, action_index]
+                temporal_difference = reward + (discount_factor * np.max(q_values[row_index, column_index])) - old_q_value
+
+                new_q_value = old_q_value + (learning_rate * temporal_difference)
+                q_values[old_row_index, old_column_index, action_index] = new_q_value
+
+
+        print(get_shortest_path(first_number_start, second_number_start)) #starting at row 3, column 9'''
+
+
+    run_button = Button(frame_up, text = 'Run', command = Run)
+    run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
+
     mainloop()
 gui()
+
+
