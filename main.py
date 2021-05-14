@@ -182,6 +182,10 @@ def gui():
                     action_index = get_next_action(current_row_index, current_column_index, 1.)
                     current_row_index, current_column_index = get_next_location(current_row_index, current_column_index, action_index)
                     shortest_path.append([current_row_index, current_column_index])
+
+                    button_matrix[current_row_index][current_column_index].config(bg = 'Orange')
+                    button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
+
                 return shortest_path
 
         epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
@@ -206,7 +210,8 @@ def gui():
 
         #print(first_number_start, first_number_dest, second_number_start, second_number_dest)
         path = get_shortest_path(first_number_start, second_number_start)
-        print(path)
+        
+ 
 
     run_button = Button(frame_up, text = 'Run', command = Run)
     run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
