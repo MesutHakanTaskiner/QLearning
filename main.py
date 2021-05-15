@@ -14,11 +14,11 @@ first_number_dest = None
 def gui():
     root = Tk()
     root.title('QLearning Algorithm')
-    root.geometry('600x600')
+    root.geometry('800x900')
     root.resizable(width = FALSE, height = FALSE)
     count = 0                                           # for identifying each button/vertex and passing unique parameters
     
-    root_size = 10                                
+    root_size = 25                            
 
     # Rewards Matrix for algorithm
     rewards = [[0 for i in range(root_size)] for j in range(root_size)]
@@ -37,7 +37,6 @@ def gui():
     global starting_point                               # starting_point is starting point
     starting_point = 0
     global destination_point                            # final destination variable
-    dest = 1000
 
     f = open("Obstacle_list.txt", "w")
 
@@ -52,16 +51,16 @@ def gui():
         global second_number_dest
         global first_number_dest
 
-        if pressed_button == 1:                                # for starting point when pressed_button = 1
-            second_number_start = int(but_no % 10)
-            first_number_start = int(but_no / 10)
+        if pressed_button == 1:                            # for starting point when pressed_button = 1
+            second_number_start = int(but_no % root_size)
+            first_number_start = int(but_no / root_size)
             button_matrix[first_number_start][second_number_start].config(bg = 'Aqua')
             start_button['state'] = DISABLED                    # Disable button after press
             pressed_button = 0
 
         if pressed_button == 2:                                # for destination when pressed_button = 2
-            second_number_dest = int(but_no % 10)
-            first_number_dest = int(but_no / 10)
+            second_number_dest = int(but_no % root_size)
+            first_number_dest = int(but_no / root_size)
             button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
             destination_button['state'] = DISABLED              # Disable button after press
             pressed_button = 0
@@ -74,8 +73,8 @@ def gui():
 
     for i in range(root_size):
         for j in range(root_size):
-            random_number = random.randint(1,9)
-            button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x), height = 0, width = 0)
+            random_number = random.randint(1, 9)
+            button_matrix[i][j] = Button(frame_down, text = f'{random_number}', padx = 5, pady = 5, command = lambda x=count: button_click(x))
             button_matrix[i][j].grid(row = i, column = j, sticky = "ew")
             rewards[i][j] = random_number
             count += 1
@@ -93,15 +92,15 @@ def gui():
         b = int((root_size**2)*(0.3))  # 30 percent of the matrix is obstacle 
 
         for a in range(b): 
-            random_numbers_x = random.randint(0, 9)
-            random_numbers_y = random.randint(0, 9)
+            random_numbers_x = random.randint(0, root_size - 1)
+            random_numbers_y = random.randint(0, root_size - 1)
             
             while rewards[random_numbers_x][random_numbers_y] == -100: # If there is random number in obstacle list generate new random number
-                random_numbers_x = random.randint(0, 9)
-                random_numbers_y = random.randint(0, 9)
+                random_numbers_x = random.randint(0, root_size - 1)
+                random_numbers_y = random.randint(0, root_size - 1)
 
             rewards[random_numbers_x][random_numbers_y] = -100
-
+        
             button_matrix[random_numbers_x][random_numbers_y].config(bg = 'Red')
 
         for i in range (root_size):
@@ -116,15 +115,17 @@ def gui():
 
         # algorithm script is called
     def Run():                                         
-        environment_rows = 10
-        environment_columns = 10
+        environment_rows = root_size
+        environment_columns = root_size
+
+        reward_point = 0
 
         q_values = np.zeros((environment_rows, environment_columns, 4)) 
 
         actions = ['up', 'right', 'down', 'left']
   
-        for i in range(10):
-            for j in range(10):
+        for i in range(root_size):
+            for j in range(root_size):
                 if rewards[i][j] != -100:
                     rewards[i][j] = -1
          
@@ -160,6 +161,7 @@ def gui():
         def get_next_location(current_row_index, current_column_index, action_index):
             new_row_index = current_row_index
             new_column_index = current_column_index
+
             if actions[action_index] == 'up' and current_row_index > 0:
                 new_row_index -= 1
             elif actions[action_index] == 'right' and current_column_index < environment_columns - 1:
@@ -185,14 +187,13 @@ def gui():
 
                     button_matrix[current_row_index][current_column_index].config(bg = 'Orange')
                     button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
-
                 return shortest_path
 
         epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
         discount_factor = 0.9 #discount factor for future rewards
         learning_rate = 0.9 #the rate at which the AI agent should learn
 
-        for episode in range(1000):
+        for episode in range((root_size**2)*10):
             row_index, column_index = get_starting_location()
             while not is_terminal_state(row_index, column_index):
                 action_index = get_next_action(row_index, column_index, epsilon)
@@ -208,10 +209,7 @@ def gui():
                 new_q_value = old_q_value + (learning_rate * temporal_difference)
                 q_values[old_row_index, old_column_index, action_index] = new_q_value
 
-        #print(first_number_start, first_number_dest, second_number_start, second_number_dest)
         path = get_shortest_path(first_number_start, second_number_start)
-        
- 
 
     run_button = Button(frame_up, text = 'Run', command = Run)
     run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
