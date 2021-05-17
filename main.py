@@ -186,7 +186,6 @@ def gui():
                     button_matrix[current_row_index][current_column_index].config(bg = 'Orange')
                     button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
                     reward_point += 5
-                print(reward_point)
                 return shortest_path
 
         epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
