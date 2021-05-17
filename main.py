@@ -204,7 +204,7 @@ def gui():
                 row_index, column_index = get_next_location(row_index, column_index, action_index)
                 
                 reward = rewards2[row_index, column_index]
-               
+
                 old_q_value = q_values[old_row_index, old_column_index, action_index]
                 
                 temporal_difference = reward + (discount_factor * np.max(q_values[row_index, column_index])) - old_q_value
@@ -213,8 +213,13 @@ def gui():
                 q_values[old_row_index, old_column_index, action_index] = new_q_value
                           
         path = get_shortest_path(first_number_start, second_number_start)
-    
-        plt.plot(reward)
+
+        plt.xlabel("Episode")
+        plt.ylabel("Steps")
+        plt.title("Episode via Steps")
+
+        plt.hist(rewards, histtype = 'bar', rwidth = 0.8)
+        
         plt.show()
 
     run_button = Button(frame_up, text = 'Run', command = Run)
