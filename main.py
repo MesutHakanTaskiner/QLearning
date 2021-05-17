@@ -1,6 +1,7 @@
 from tkinter import *
 import random
 import numpy as np
+import matplotlib.pyplot as plt 
 
 pressed_button = None
 starting_point = None
@@ -86,11 +87,11 @@ def gui():
         
     restart_button = Button(frame_up, text='Restart', command = restart)
     restart_button.grid(row = 0, column = 3, padx = 10, pady = 5)
-
+    
     # Creating obstacles that random place
     def setting_obstacles(): 
         b = int((root_size**2)*(0.3))  # 30 percent of the matrix is obstacle 
-
+        
         for a in range(b): 
             random_numbers_x = random.randint(0, root_size - 1)
             random_numbers_y = random.randint(0, root_size - 1)
@@ -114,11 +115,11 @@ def gui():
     obstacle_button.grid(row = 0, column = 4, padx = 10, pady = 5)
 
         # algorithm script is called
-    def Run():                                         
+    def Run():           
         environment_rows = root_size
         environment_columns = root_size
 
-        reward_point = 0
+        reward_point = []
 
         q_values = np.zeros((environment_rows, environment_columns, 4)) 
 
@@ -136,6 +137,7 @@ def gui():
 
         rewards2 = np.array(rewards)
 
+        # Is there any obstacle on path
         def is_terminal_state(current_row_index, current_column_index):
             if rewards2[current_row_index, current_column_index] == -1:
                 return False
@@ -146,7 +148,7 @@ def gui():
         def get_starting_location():
             current_row_index = np.random.randint(environment_rows)
             current_column_index = np.random.randint(environment_columns)
-           
+            
             while is_terminal_state(current_row_index, current_column_index):
                 current_row_index = np.random.randint(environment_rows)
                 current_column_index = np.random.randint(environment_columns)
@@ -192,24 +194,28 @@ def gui():
         epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
         discount_factor = 0.9 #discount factor for future rewards
         learning_rate = 0.9 #the rate at which the AI agent should learn
-
+        
         for episode in range((root_size**2)*10):
             row_index, column_index = get_starting_location()
             while not is_terminal_state(row_index, column_index):
                 action_index = get_next_action(row_index, column_index, epsilon)
 
-                old_row_index, old_column_index = row_index, column_index #store the old row and column indexes
+                old_row_index, old_column_index = row_index, column_index #store the old row and column indexes1
                 row_index, column_index = get_next_location(row_index, column_index, action_index)
                 
                 reward = rewards2[row_index, column_index]
+               
                 old_q_value = q_values[old_row_index, old_column_index, action_index]
                 
                 temporal_difference = reward + (discount_factor * np.max(q_values[row_index, column_index])) - old_q_value
 
                 new_q_value = old_q_value + (learning_rate * temporal_difference)
                 q_values[old_row_index, old_column_index, action_index] = new_q_value
-
+                          
         path = get_shortest_path(first_number_start, second_number_start)
+    
+        plt.plot(reward)
+        plt.show()
 
     run_button = Button(frame_up, text = 'Run', command = Run)
     run_button.grid(row = 0, column = 2, padx = 10, pady = 5)
