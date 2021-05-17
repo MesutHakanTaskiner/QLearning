@@ -11,6 +11,7 @@ first_number_start = None
 second_number_start = None
 second_number_dest = None
 first_number_dest = None
+reward_point = 0
 
 def gui():
     root = Tk()
@@ -119,8 +120,6 @@ def gui():
         environment_rows = root_size
         environment_columns = root_size
 
-        reward_point = []
-
         q_values = np.zeros((environment_rows, environment_columns, 4)) 
 
         actions = ['up', 'right', 'down', 'left']
@@ -131,9 +130,6 @@ def gui():
                     rewards[i][j] = -1
          
         rewards[first_number_dest][second_number_dest] = 100
-
-        for row in rewards:
-            print(row)     
 
         rewards2 = np.array(rewards)
 
@@ -175,6 +171,7 @@ def gui():
             return new_row_index, new_column_index
 
         def get_shortest_path(start_row_index, start_column_index):
+            global reward_point
             if is_terminal_state(start_row_index, start_column_index):
                 return []
             else: 
@@ -186,9 +183,10 @@ def gui():
                     action_index = get_next_action(current_row_index, current_column_index, 1.)
                     current_row_index, current_column_index = get_next_location(current_row_index, current_column_index, action_index)
                     shortest_path.append([current_row_index, current_column_index])
-
                     button_matrix[current_row_index][current_column_index].config(bg = 'Orange')
                     button_matrix[first_number_dest][second_number_dest].config(bg = '#7dcf21')
+                    reward_point += 5
+                print(reward_point)
                 return shortest_path
 
         epsilon = 0.9 #the percentage of time when we should take the best action (instead of a random action)
